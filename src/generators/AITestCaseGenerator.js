@@ -67,7 +67,7 @@ Return ONLY the code file, no explanation.`;
 
     const response = await this.client.messages.create({
       model: this.model,
-      max_tokens: 6000,
+       max_tokens: 12000,
       system: systemPrompt,
       messages: [
         {
