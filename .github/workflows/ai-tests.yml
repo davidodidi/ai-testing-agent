@@ -83,6 +83,8 @@ jobs:
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: |
+          rm -rf tests/api/generated/
+          mkdir -p tests/api/generated/
           node tests/api/generateApiTests.js
           npx playwright test tests/api/generated/ --reporter=list
 

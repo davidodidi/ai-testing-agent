@@ -110,7 +110,7 @@ Include:
 - Alternative flows (e.g. invalid input)
 - Edge cases
 - Accessibility check (tab navigation, ARIA roles)
-Use page object model structure.
+Do NOT use page objects or import any external files. Write all test logic inline in a single self-contained file with no imports other than @playwright/test.
 Return ONLY valid JavaScript code.`,
       messages: [
         {
