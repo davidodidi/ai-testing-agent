@@ -77,7 +77,7 @@ jobs:
         run: npm ci
 
       - name: Install Playwright browsers
-        run: npx playwright install --with-deps chromium
+        run: npx playwright install --with-deps chromium firefox
 
       - name: Run AI-generated API tests
         run: npx playwright test tests/api/generated/ --reporter=list
