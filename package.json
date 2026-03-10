@@ -1,0 +1,35 @@
+{
+  "name": "ai-testing-agent",
+  "version": "1.0.0",
+  "description": "AI-powered agentic test automation framework — autonomous test execution, self-healing locators, LLM test generation, and AI visual assertion",
+  "main": "src/agents/TestingAgent.js",
+  "scripts": {
+    "test:agent": "node tests/web/agentTest.js",
+    "test:generate": "node tests/api/generateApiTests.js",
+    "test:playwright": "npx playwright test",
+    "demo": "node tests/web/agentTest.js && node tests/api/generateApiTests.js"
+  },
+  "keywords": [
+    "ai",
+    "testing",
+    "automation",
+    "self-healing",
+    "playwright",
+    "claude",
+    "agentic"
+  ],
+  "author": "David Odidi <github.com/davidodidi>",
+  "license": "MIT",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.20.0",
+    "@playwright/test": "^1.44.0",
+    "dotenv": "^16.4.5",
+    "playwright": "^1.44.0"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

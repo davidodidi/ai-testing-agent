@@ -1,0 +1,20 @@
+# Dependencies
+node_modules/
+
+# Environment
+.env
+
+# Test outputs
+reports/
+generated-tests/
+test-results/
+playwright-report/
+
+# Build artifacts
+*.pdf
+*.jpg
+*.png
+
+# OS
+.DS_Store
+Thumbs.db
