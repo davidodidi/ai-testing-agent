@@ -4,7 +4,7 @@
 
 [![CI Status](https://github.com/davidodidi/ai-testing-agent/actions/workflows/ai-tests.yml/badge.svg)](https://github.com/davidodidi/ai-testing-agent/actions)
 [![Node](https://img.shields.io/badge/node-%3E%3D18-green)](https://nodejs.org)
-[![Playwright](https://img.shields.io/badge/playwright-1.44-blueviolet)](https://playwright.dev)
+[![Playwright](https://img.shields.io/badge/playwright-1.58.2-blueviolet)](https://playwright.dev)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue)](./LICENSE)
 
 ---
@@ -68,7 +68,7 @@ Traditional test automation is **brittle**: selectors break, tests become stale,
 git clone https://github.com/davidodidi/ai-testing-agent.git
 cd ai-testing-agent
 npm install
-npx playwright install --with-deps chromium
+npx playwright install --with-deps chromium firefox
 cp .env.example .env
 # Add your ANTHROPIC_API_KEY to .env
 ```
@@ -100,7 +100,7 @@ const session = await agent.run(
   "https://www.saucedemo.com"
 );
 
-console.log(session.status);        // "PASSED"
+console.log(session.status);         // "PASSED"
 console.log(session.summary.healed); // Number of self-healed steps
 ```
 
@@ -142,29 +142,19 @@ const generator = new AITestCaseGenerator();
 
 await generator.generateApiTests({
   method: "POST",
-  path: "/users",
-  baseUrl: "https://api.example.com",
-  requestBody: { email: "test@test.com", password: "secret" },
-  responseSchema: { id: "number", email: "string", token: "string" }
-}, "javascript"); // or "java"
+  path: "/api/register",
+  baseUrl: "https://reqres.in",
+  requestBody: { email: "eve.holt@reqres.in", password: "pistol" },
+  responseSchema: { id: "number", token: "string" }
+}, "javascript");
 ```
 
 Generated tests include:
-- ✅ Happy path (201 Created, valid response schema)
+- ✅ Happy path (200 OK, valid response schema)
 - ❌ Missing fields (400 Bad Request)
-- ❌ Invalid data types (422 Unprocessable)
-- 🔒 Unauthorized access (401)
+- ❌ Invalid data (400 with error message)
+- 🔍 Schema validation (required fields, correct types)
 - ⏱️ Response time assertions (< 2000ms)
-- 🔍 SQL injection probes
-
-Also supports user story → E2E test generation:
-
-```javascript
-await generator.generateE2ETests(
-  `As a customer, I want to checkout my cart...`,
-  "https://www.saucedemo.com"
-);
-```
 
 ---
 
@@ -184,6 +174,36 @@ const result = await checker.assertPageLooksCorrect(
 ```
 
 Claude analyzes the screenshot and tells you whether the page matches your intent — not just whether pixels changed.
+
+---
+
+## 🧪 Test Suites
+
+### AI-Generated API Tests — `tests/api/generated/`
+
+Targets [reqres.in](https://reqres.in) — a real validating REST API.
+
+| Suite | Tests | Status |
+|---|---|---|
+| Happy Path | 1 | ✅ |
+| Missing Required Fields | 3 | ✅ |
+| Invalid Data | 2 | ✅ |
+| Schema Validation | 2 | ✅ |
+| Response Time | 2 | ✅ |
+
+### E2E Tests — `tests/e2e/`
+
+Targets [SauceDemo](https://www.saucedemo.com) — a full e-commerce demo app.
+
+| Suite | Tests | Status |
+|---|---|---|
+| Authentication | 5 | ✅ |
+| Product Listing | 4 | ✅ |
+| Cart | 4 | ✅ |
+| Checkout Flow | 5 | ✅ |
+| Logout | 1 | ✅ |
+
+All tests run cross-browser: **Chromium** and **Firefox**.
 
 ---
 
@@ -209,8 +229,9 @@ Reports are saved as:
 ## 🔄 CI/CD Integration
 
 The GitHub Actions workflow (`.github/workflows/ai-tests.yml`) runs:
+
 1. **Agentic E2E tests** on every push
-2. **AI-generated API tests** after E2E
+2. **AI-generated API + E2E tests** after agent tests (Chromium + Firefox)
 3. **Nightly regression** via cron schedule
 4. **Artifacts** (reports, screenshots) retained 30 days
 
@@ -224,18 +245,21 @@ Required secret: `ANTHROPIC_API_KEY`
 ai-testing-agent/
 ├── src/
 │   ├── agents/
-│   │   ├── TestingAgent.js       # Main agentic orchestrator
-│   │   └── AIVisualAssertion.js  # Vision-based assertions
+│   │   ├── TestingAgent.js          # Main agentic orchestrator
+│   │   └── AIVisualAssertion.js     # Vision-based assertions
 │   ├── healers/
-│   │   └── SelfHealingLocator.js # AI selector recovery
+│   │   └── SelfHealingLocator.js    # AI selector recovery
 │   ├── generators/
-│   │   └── AITestCaseGenerator.js # LLM test generation
+│   │   └── AITestCaseGenerator.js   # LLM test generation
 │   └── utils/
-│       ├── TestReporter.js        # HTML + JSON reports
+│       ├── TestReporter.js          # HTML + JSON reports
 │       └── logger.js
 ├── tests/
-│   ├── web/agentTest.js           # E2E agent examples
-│   └── api/generateApiTests.js    # API generation examples
+│   ├── web/agentTest.js             # Agentic E2E runner
+│   ├── api/generateApiTests.js      # API generation runner
+│   ├── api/generated/               # AI-generated API test specs
+│   └── e2e/
+│       └── saucedemo.e2e.spec.js    # SauceDemo E2E suite (19 tests)
 ├── .github/workflows/ai-tests.yml
 ├── playwright.config.js
 └── package.json
