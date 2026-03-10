@@ -76,18 +76,19 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Generate and run API tests
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Generate API tests
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-        run: npm run test:generate
+        run: node tests/api/generateApiTests.js
 
       - name: Run generated Playwright API tests
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-        run: |
-          if ls generated-tests/*.spec.js 1> /dev/null 2>&1; then
-            npx playwright test generated-tests/
-          fi
+        run: npx playwright test generated-tests/ --reporter=list
+
 
   notify:
     name: Notify Results
