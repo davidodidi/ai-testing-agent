@@ -79,14 +79,8 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
 
-      - name: Generate and run API tests
-        env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-        run: |
-          rm -rf tests/api/generated/
-          mkdir -p tests/api/generated/
-          node tests/api/generateApiTests.js
-          npx playwright test tests/api/generated/ --reporter=list
+      - name: Run AI-generated API tests
+        run: npx playwright test tests/api/generated/ --reporter=list
 
 
   notify:
