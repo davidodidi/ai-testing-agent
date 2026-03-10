@@ -13,7 +13,7 @@ require("dotenv").config();
 const AITestCaseGenerator = require("../../src/generators/AITestCaseGenerator");
 
 (async () => {
-  const generator = new AITestCaseGenerator({ outputDir: "./generated-tests" });
+  const generator = new AITestCaseGenerator({ outputDir: "./tests/api/generated" });
 
   // Generate JS tests for POST /products/add
   const { path: jsPath } = await generator.generateApiTests(

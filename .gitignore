@@ -6,9 +6,9 @@ node_modules/
 
 # Test outputs
 reports/
-generated-tests/
 test-results/
 playwright-report/
+tests/api/generated/*.java
 
 # Build artifacts
 *.pdf
