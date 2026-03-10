@@ -78,8 +78,8 @@ Return ONLY the code file, no explanation.`;
     });
 
     const code = response.content[0].text
-      .replace(/```(?:javascript|java|js)?\n?/g, "")
-      .replace(/```$/g, "")
+      .replace(/```(?:typescript|javascript|java|js|ts)?\n?/g, "")
+      .replace(/```/g, "")
       .trim();
 
     const ext = language === "java" ? ".java" : ".spec.js";
