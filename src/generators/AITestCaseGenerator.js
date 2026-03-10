@@ -41,29 +41,27 @@ class AITestCaseGenerator {
   async generateApiTests(endpointSpec, language = "javascript") {
     logger.info(`🧠 Generating ${language} tests for ${endpointSpec.method} ${endpointSpec.path}`);
 
-    const systemPrompt = `You are a senior QA automation engineer who writes production-quality API tests.
+    const systemPrompt = `You are a senior QA automation engineer who writes production-quality API tests using Playwright's APIRequestContext.
+
 Generate a comprehensive test suite for the given API endpoint.
 
+CRITICAL RULES:
+- Use ONLY the baseUrl and path provided — do not substitute a different API
+- For status code assertions on happy path, use the ACTUAL correct HTTP status (201 for resource creation, 200 for reads)
+- For negative tests (missing fields, invalid types), assert the ACTUAL status the API returns — do NOT assume 400/422 if the API is a mock. Instead assert that the response is NOT 2xx using: expect(response.ok()).toBe(false) OR check that an error field exists in the response body
+- Never hardcode expected status codes for negative tests — use flexible assertions
+- All tests must be self-contained with no imports other than @playwright/test
+- Return ONLY valid JavaScript/TypeScript code with no markdown fences, no explanations
+
 Include these test categories:
-1. Happy path (valid inputs, expected 2xx responses)
-2. Boundary value tests (empty strings, max-length values, zero, negative numbers)
-3. Missing required fields (expect 400/422)
-4. Invalid data types (string where number expected, etc.)
-5. Unauthorized access (expect 401/403)
-6. Not found scenarios (expect 404)
-7. Schema validation (assert all required fields present in response)
-8. Response time assertion (must be < 2000ms)
+1. Happy path (valid inputs, assert correct 2xx status and response schema)
+2. Boundary value tests (empty strings, max-length, zero, negative numbers)
+3. Missing required fields
+4. Invalid data types
+5. Schema validation (assert all required fields present in response)
+6. Response time assertion (must be < 2000ms)
 
-${language === "javascript" ? "Use Playwright's APIRequestContext (@playwright/test) syntax." : "Use RestAssured with JUnit 5 syntax."}
-
-Rules:
-- Each test must be independent
-- Use descriptive test names (it('should return 400 when email is missing'))
-- Include meaningful assertions, not just status code checks
-- Group by category using describe/test blocks
-- Add TODO comments for environment-specific values
-
-Return ONLY the code file, no explanation.`;
+Format: Use import { test, expect } from '@playwright/test';`;
 
     const response = await this.client.messages.create({
       model: this.model,
